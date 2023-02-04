@@ -1,46 +1,51 @@
-//   function createPromise(position, delay) {
-//       const promise = new Promise((resolve, reject) => {
-//         const shouldResolve = Math.random() > 0.3;
-//         setTimeout(()=>{
-//           if(shouldResolve){
-//             resolve('resolved');
-//           }
-//             reject('rejected');
-//         }, delay)
-//       })
-// }
+import { Report } from 'notiflix/build/notiflix-report-aio';
+// Додатковий імпорт стилів
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import "flatpickr/dist/flatpickr.min.css";
+
+const formEl = document.querySelector('.form');
+formEl.addEventListener('submit', onSubmit);
+
+function onSubmit(e){
+    e.preventDefault();
+    const { 
+        elements:{delay, step, amount}
+    } = e.currentTarget;
+    let delaySet = parseInt(delay.value);
+    let positions = parseInt(amount.value);
+    let stepSet = parseInt(step.value);
+    for (let position = 1; position <= positions; position++){
+        createPromise(position, delaySet)
+        .then(({ position, delay }) => {
+            Notify.success(`Fulfilled promise ${position} in ${delay}ms`);
+;
+          })
+        .catch(({ position, delay }) => {
+            Notify.failure(`Rejected promise ${position} in ${delay}ms`);
+        });
+        delaySet += stepSet;
+    }
+    
+}
 
 
-// const promise = new Promise((resolve, reject) => {
-//   const shouldResolve = Math.random() > 0.3;
-//   setTimeout(()=>{
-//     if(shouldResolve){
-//       resolve('resolved');
-//     }
-//       reject('rejected');
-//   }, 2000);
-// })
-
-// promise.then(
-//   result => {
-//     console.log('yeaaaaa')
-//   },
-//   error => {
-//     console.log('fffaaaaak')
-//   }
-// )
-
-//createPromise(4, 5000);
-
-
-// const isSuccess = true;
-
-// const promise = new Promise((resolve, reject) => {
-//   setTimeout(() => {
-//     if (isSuccess) {
-//       resolve("Success! Value passed to resolve function");
-//     } else {
-//       reject("Error! Error passed to reject function");
-//     }
-//   }, 2000);
-// });
+function createPromise(position, delay) {
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            const shouldResolve = Math.random() > 0.3;
+            if(shouldResolve){
+                resolve({position, delay});
+            }
+                reject({position, delay});
+        }, delay)
+    });
+}
+    
+  
+//   createPromise(2, 1500)
+//   .then(({ position, delay }) => {
+//     console.log(`✅ Fulfilled promise ${position} in ${delay}ms`);
+//   })
+//   .catch(({ position, delay }) => {
+//     console.log(`❌ Rejected promise ${position} in ${delay}ms`);
+//   });
